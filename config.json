@@ -1,0 +1,67 @@
+{
+  "test": {
+    "title": "Test DISC",
+    "subtitle": "Análisis de Perfil Comportamental - 28 Preguntas",
+    "totalQuestions": 28
+  },
+  "questions": [
+    {"id": 1, "options": ["Entusiasta", "Rápido", "Lógico", "Apacible"], "types": ["I", "D", "C", "S"]},
+    {"id": 2, "options": ["Cauteloso", "Decidido", "Receptivo", "Bondadoso"], "types": ["C", "D", "I", "S"]},
+    {"id": 3, "options": ["Amigable", "Preciso", "Franco", "Tranquilo"], "types": ["I", "C", "D", "S"]},
+    {"id": 4, "options": ["Elocuente", "Controlado", "Tolerante", "Decisivo"], "types": ["I", "C", "S", "D"]},
+    {"id": 5, "options": ["Atrevido", "Concienzudo", "Comunicativo", "Moderado"], "types": ["D", "C", "I", "S"]},
+    {"id": 6, "options": ["Ameno", "Ingenioso", "Investigador", "Acepta riesgos"], "types": ["S", "I", "C", "D"]},
+    {"id": 7, "options": ["Expresivo", "Cuidadoso", "Dominante", "Sensible"], "types": ["I", "C", "D", "S"]},
+    {"id": 8, "options": ["Extrovertido", "Precavido", "Constante", "Impaciente"], "types": ["I", "C", "S", "D"]},
+    {"id": 9, "options": ["Discreto", "Complaciente", "Encantador", "Insistente"], "types": ["C", "S", "I", "D"]},
+    {"id": 10, "options": ["Valeroso", "Anima de los demás", "Pacífico", "Perfeccionista"], "types": ["D", "I", "S", "C"]},
+    {"id": 11, "options": ["Reservado", "Atento", "Osado", "Alegre"], "types": ["C", "S", "D", "I"]},
+    {"id": 12, "options": ["Estimulante", "Gentil", "Perceptivo", "Independiente"], "types": ["I", "S", "C", "D"]},
+    {"id": 13, "options": ["Competitivo", "Considerado", "Alegre", "Sagaz"], "types": ["D", "S", "I", "C"]},
+    {"id": 14, "options": ["Meticuloso", "Obediente", "Ideas firmes", "Alentador"], "types": ["C", "S", "D", "I"]},
+    {"id": 15, "options": ["Popular", "Reflexivo", "Tenaz", "Calmado"], "types": ["I", "C", "D", "S"]},
+    {"id": 16, "options": ["Analítico", "Audaz", "Leal", "Promotor"], "types": ["C", "D", "S", "I"]},
+    {"id": 17, "options": ["Sociable", "Paciente", "Autosuficiente", "Certero"], "types": ["I", "S", "D", "C"]},
+    {"id": 18, "options": ["Adaptable", "Resuelto", "Prevenido", "Vivaz"], "types": ["S", "D", "C", "I"]},
+    {"id": 19, "options": ["Agresivo", "Impetuoso", "Amistoso", "Discerniente"], "types": ["D", "I", "S", "C"]},
+    {"id": 20, "options": ["De trato fácil", "Compasivo", "Cauto", "Habla directo"], "types": ["I", "S", "C", "D"]},
+    {"id": 21, "options": ["Evaluador", "Generoso", "Animado", "Persistente"], "types": ["C", "S", "I", "D"]},
+    {"id": 22, "options": ["Impulsivo", "Ciudad los detalles", "Enérgico", "Tranquilo"], "types": ["I", "C", "D", "S"]},
+    {"id": 23, "options": ["Sociable", "Sistemático", "Vigoroso", "Tolerante"], "types": ["S", "C", "D", "I"]},
+    {"id": 24, "options": ["Cautivador", "Contento", "Exigente", "Apegado a las normas"], "types": ["I", "S", "D", "C"]},
+    {"id": 25, "options": ["Discute con frecuencia", "Metódico", "Cometido", "Desenvuelto"], "types": ["D", "C", "S", "I"]},
+    {"id": 26, "options": ["Jovial", "Preciso", "Directo", "Ecuánime"], "types": ["I", "C", "D", "S"]},
+    {"id": 27, "options": ["Inquieto", "Amable", "Elocuente", "Cuidadoso"], "types": ["D", "S", "I", "C"]},
+    {"id": 28, "options": ["Prudente", "Pionero", "Espontáneo", "Colaborador"], "types": ["C", "D", "I", "S"]}
+  ],
+  "profiles": {
+    "D": {
+      "name": "DOMINANCIA",
+      "color": "#dc3545",
+      "traits": ["Orientado a resultados", "Decisivo y directo", "Competitivo", "Independiente", "Resolutivo", "Tiende al control"],
+      "strengths": "Liderazgo fuerte, toma decisiones rápidas, impulsa resultados",
+      "needs": "Desarrollar empatía, escuchar más a otros"
+    },
+    "I": {
+      "name": "INFLUENCIA",
+      "color": "#ffc107",
+      "traits": ["Sociable y comunicativo", "Optimista y entusiasta", "Persuasivo", "Creativo", "Relacional", "Inspirador"],
+      "strengths": "Motiva al equipo, construye relaciones, genera energía positiva",
+      "needs": "Mejorar seguimiento en detalles"
+    },
+    "S": {
+      "name": "ESTABILIDAD",
+      "color": "#28a745",
+      "traits": ["Paciente y leal", "Confiable y constante", "Buen oyente", "Amable y empático", "Busca armonía", "Servicial"],
+      "strengths": "Crea confianza, apoya al equipo, mantiene estabilidad",
+      "needs": "Desarrollar mayor asertividad"
+    },
+    "C": {
+      "name": "CONCIENCIA",
+      "color": "#007bff",
+      "traits": ["Analítico y reflexivo", "Perfeccionista", "Sistemático", "Cuidadoso con detalles", "Lógico", "Riguroso"],
+      "strengths": "Asegura calidad, planifica meticulosamente",
+      "needs": "Mejorar flexibilidad y comunicación"
+    }
+  }
+}
