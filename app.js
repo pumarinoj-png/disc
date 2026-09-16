@@ -69,6 +69,14 @@ function selectOption(index, type) {
     if (!responses[currentQuestion]) {
         responses[currentQuestion] = {};
     }
+    
+    // Validar que no sea la misma opción en MÁS y MENOS
+    const otherType = type === 'mas' ? 'menos' : 'mas';
+    if (responses[currentQuestion][otherType] === index) {
+        alert('No puedes seleccionar la misma palabra como MÁS y MENOS');
+        return;
+    }
+    
     responses[currentQuestion][type] = index;
     renderQuestion();
 }
@@ -222,15 +230,147 @@ function crearGrafico(canvasId, data) {
 }
 
 function descargarPDF() {
-    const element = document.querySelector('.results-container');
+    const data = window.reportData;
+    const profile = PROFILES[data.primary];
+    
+    const htmlContent = `
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <title>Perfil DISC</title>
+            <style>
+                body { font-family: Arial, sans-serif; color: #333; line-height: 1.6; }
+                .header { text-align: center; margin-bottom: 30px; border-bottom: 3px solid #667eea; padding-bottom: 20px; }
+                .header h1 { font-size: 28px; margin: 0; color: #667eea; }
+                .header p { margin: 5px 0; color: #666; }
+                .profile-name { font-size: 20px; font-weight: bold; color: #667eea; margin: 20px 0; }
+                .section { margin-bottom: 30px; page-break-inside: avoid; }
+                .section h2 { font-size: 16px; color: #667eea; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; margin-bottom: 15px; }
+                .scores { display: flex; justify-content: space-around; margin: 20px 0; }
+                .score-box { text-align: center; padding: 15px; background: #f8f9ff; border-radius: 8px; width: 20%; }
+                .score-value { font-size: 24px; font-weight: bold; color: #667eea; }
+                .score-label { font-size: 12px; color: #666; text-transform: uppercase; }
+                .traits { columns: 2; column-gap: 20px; }
+                .trait-item { margin-bottom: 8px; }
+                .trait-item::before { content: "✓ "; color: #667eea; font-weight: bold; }
+                .two-column { display: flex; gap: 30px; }
+                .column { flex: 1; }
+                .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e0e0e0; font-size: 11px; color: #999; }
+                table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+                th, td { padding: 10px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+                th { background: #f8f9ff; font-weight: bold; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>Test DISC</h1>
+                <p>Análisis de Perfil Comportamental</p>
+                <p style="font-size: 12px; color: #999;">28 Preguntas</p>
+            </div>
+
+            <div class="section">
+                <div class="profile-name">Tu Perfil: ${profile.name}</div>
+                <div class="scores">
+                    <div class="score-box" style="${data.differential.D >= 0 ? 'background: #ffcccc;' : 'background: #f0f0f0;'}">
+                        <div class="score-label">D</div>
+                        <div class="score-value">${data.differential.D}</div>
+                        <div class="score-label">Dominancia</div>
+                    </div>
+                    <div class="score-box" style="${data.differential.I >= 0 ? 'background: #ffffcc;' : 'background: #f0f0f0;'}">
+                        <div class="score-label">I</div>
+                        <div class="score-value">${data.differential.I}</div>
+                        <div class="score-label">Influencia</div>
+                    </div>
+                    <div class="score-box" style="${data.differential.S >= 0 ? 'background: #ccffcc;' : 'background: #f0f0f0;'}">
+                        <div class="score-label">S</div>
+                        <div class="score-value">${data.differential.S}</div>
+                        <div class="score-label">Estabilidad</div>
+                    </div>
+                    <div class="score-box" style="${data.differential.C >= 0 ? 'background: #ccccff;' : 'background: #f0f0f0;'}">
+                        <div class="score-label">C</div>
+                        <div class="score-value">${data.differential.C}</div>
+                        <div class="score-label">Conciencia</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Características</h2>
+                <div class="traits">
+                    ${profile.traits.map(t => `<div class="trait-item">${t}</div>`).join('')}
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Análisis</h2>
+                <div class="two-column">
+                    <div class="column">
+                        <h3 style="color: #667eea; font-size: 14px; margin-top: 0;">Fortalezas</h3>
+                        <p>${profile.strengths}</p>
+                    </div>
+                    <div class="column">
+                        <h3 style="color: #667eea; font-size: 14px; margin-top: 0;">Áreas de Desarrollo</h3>
+                        <p>${profile.needs}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Escala de Puntuación</h2>
+                <p><strong>Rango:</strong> -28 a +28</p>
+                <p><strong>Fórmula:</strong> Puntuación = Respuestas MÁS - Respuestas MENOS</p>
+                <table>
+                    <tr>
+                        <th>Dimensión</th>
+                        <th>Más</th>
+                        <th>Menos</th>
+                        <th>Diferencial</th>
+                    </tr>
+                    <tr>
+                        <td>D - Dominancia</td>
+                        <td>${data.scorePlus.D}</td>
+                        <td>${data.scoreMinus.D}</td>
+                        <td style="font-weight: bold; color: #667eea;">${data.differential.D}</td>
+                    </tr>
+                    <tr>
+                        <td>I - Influencia</td>
+                        <td>${data.scorePlus.I}</td>
+                        <td>${data.scoreMinus.I}</td>
+                        <td style="font-weight: bold; color: #667eea;">${data.differential.I}</td>
+                    </tr>
+                    <tr>
+                        <td>S - Estabilidad</td>
+                        <td>${data.scorePlus.S}</td>
+                        <td>${data.scoreMinus.S}</td>
+                        <td style="font-weight: bold; color: #667eea;">${data.differential.S}</td>
+                    </tr>
+                    <tr>
+                        <td>C - Conciencia</td>
+                        <td>${data.scorePlus.C}</td>
+                        <td>${data.scoreMinus.C}</td>
+                        <td style="font-weight: bold; color: #667eea;">${data.differential.C}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="footer">
+                <p>Este informe fue generado automáticamente por el Test DISC de 28 preguntas.</p>
+                <p>La escala va de -28 (mínimo) a +28 (máximo) para cada dimensión.</p>
+            </div>
+        </body>
+        </html>
+    `;
+
     const opt = {
         margin: 10,
         filename: 'Perfil_DISC.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
         jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
     };
-    html2pdf().set(opt).from(element).save();
+    
+    html2pdf().set(opt).from(htmlContent).save();
 }
 
 // Inicializar
