@@ -26,7 +26,7 @@
     {"id": 19, "options": ["Agresivo", "Impetuoso", "Amistoso", "Discerniente"], "types": ["D", "I", "S", "C"]},
     {"id": 20, "options": ["De trato fácil", "Compasivo", "Cauto", "Habla directo"], "types": ["I", "S", "C", "D"]},
     {"id": 21, "options": ["Evaluador", "Generoso", "Animado", "Persistente"], "types": ["C", "S", "I", "D"]},
-    {"id": 22, "options": ["Impulsivo", "Ciudad los detalles", "Enérgico", "Tranquilo"], "types": ["I", "C", "D", "S"]},
+    {"id": 22, "options": ["Impulsivo", "Cuida los detalles", "Enérgico", "Tranquilo"], "types": ["I", "C", "D", "S"]},
     {"id": 23, "options": ["Sociable", "Sistemático", "Vigoroso", "Tolerante"], "types": ["S", "C", "D", "I"]},
     {"id": 24, "options": ["Cautivador", "Contento", "Exigente", "Apegado a las normas"], "types": ["I", "S", "D", "C"]},
     {"id": 25, "options": ["Discute con frecuencia", "Metódico", "Cometido", "Desenvuelto"], "types": ["D", "C", "S", "I"]},
