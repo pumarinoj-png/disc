@@ -233,6 +233,15 @@ function descargarPDF() {
     const data = window.reportData;
     const profile = PROFILES[data.primary];
     
+    const coloresPerfil = {
+        D: { bg: '#dc3545', light: '#ffcccc', text: '#a02830' },
+        I: { bg: '#ffc107', light: '#ffffcc', text: '#cc9900' },
+        S: { bg: '#28a745', light: '#ccffcc', text: '#1e7e34' },
+        C: { bg: '#007bff', light: '#ccccff', text: '#0056b3' }
+    };
+    
+    const color = coloresPerfil[data.primary];
+    
     const htmlContent = `
         <!DOCTYPE html>
         <html lang="es">
@@ -240,134 +249,180 @@ function descargarPDF() {
             <meta charset="UTF-8">
             <title>Perfil DISC</title>
             <style>
-                body { font-family: Arial, sans-serif; color: #333; line-height: 1.6; }
-                .header { text-align: center; margin-bottom: 30px; border-bottom: 3px solid #667eea; padding-bottom: 20px; }
-                .header h1 { font-size: 28px; margin: 0; color: #667eea; }
-                .header p { margin: 5px 0; color: #666; }
-                .profile-name { font-size: 20px; font-weight: bold; color: #667eea; margin: 20px 0; }
-                .section { margin-bottom: 30px; page-break-inside: avoid; }
-                .section h2 { font-size: 16px; color: #667eea; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; margin-bottom: 15px; }
-                .scores { display: flex; justify-content: space-around; margin: 20px 0; }
-                .score-box { text-align: center; padding: 15px; background: #f8f9ff; border-radius: 8px; width: 20%; }
-                .score-value { font-size: 24px; font-weight: bold; color: #667eea; }
-                .score-label { font-size: 12px; color: #666; text-transform: uppercase; }
-                .traits { columns: 2; column-gap: 20px; }
-                .trait-item { margin-bottom: 8px; }
-                .trait-item::before { content: "✓ "; color: #667eea; font-weight: bold; }
-                .two-column { display: flex; gap: 30px; }
-                .column { flex: 1; }
-                .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e0e0e0; font-size: 11px; color: #999; }
-                table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-                th, td { padding: 10px; text-align: left; border-bottom: 1px solid #e0e0e0; }
-                th { background: #f8f9ff; font-weight: bold; }
+                * { margin: 0; padding: 0; }
+                body { font-family: Arial, sans-serif; color: #333; line-height: 1.5; font-size: 11px; }
+                .header { background: ${color.bg}; color: white; padding: 20px; text-align: center; }
+                .header h1 { font-size: 24px; margin-bottom: 5px; }
+                .header p { font-size: 10px; opacity: 0.9; }
+                .content { padding: 15px; }
+                .section { margin-bottom: 20px; }
+                .section-title { background: ${color.light}; border-left: 4px solid ${color.bg}; padding: 10px; font-weight: bold; font-size: 12px; margin-bottom: 10px; }
+                .profile-name { font-size: 18px; font-weight: bold; color: ${color.bg}; margin: 10px 0; text-align: center; }
+                .charts-row { display: flex; gap: 8px; margin: 15px 0; height: 75px; align-items: flex-start; justify-content: space-around; }
+                .chart-col { display: flex; flex-direction: column; align-items: center; flex: 1; }
+                .chart-bar { width: 100%; background: #f0f0f0; border-radius: 2px; display: flex; align-items: flex-end; justify-content: center; position: relative; }
+                .chart-bar-fill { width: 100%; background: ${color.bg}; border-radius: 2px 2px 0 0; }
+                .chart-value { font-size: 10px; font-weight: bold; color: ${color.bg}; margin-top: 8px; margin-bottom: 3px; }
+                .chart-label { font-size: 9px; color: #666; text-transform: uppercase; }
+                .two-col { display: flex; gap: 15px; }
+                .col { flex: 1; font-size: 10px; }
+                .col h4 { color: ${color.bg}; font-size: 11px; margin-bottom: 5px; font-weight: bold; }
+                .traits { font-size: 10px; line-height: 1.4; }
+                .trait { margin-bottom: 3px; }
+                .trait::before { content: "✓ "; color: ${color.bg}; font-weight: bold; }
+                table { width: 100%; border-collapse: collapse; font-size: 9px; margin: 10px 0; }
+                th { background: ${color.bg}; border: 1px solid ${color.bg}; padding: 6px; text-align: left; font-weight: bold; color: white; }
+                th:not(:first-child) { text-align: center; }
+                td { border: 1px solid #ddd; padding: 6px; }
+                td:nth-child(2), td:nth-child(3), td:nth-child(4) { text-align: center; }
+                .footer { font-size: 9px; color: #999; text-align: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #ddd; }
+                .page-break { page-break-before: always; margin-top: 20px; }
             </style>
         </head>
         <body>
             <div class="header">
                 <h1>Test DISC</h1>
                 <p>Análisis de Perfil Comportamental</p>
-                <p style="font-size: 12px; color: #999;">28 Preguntas</p>
             </div>
 
-            <div class="section">
-                <div class="profile-name">Tu Perfil: ${profile.name}</div>
-                <div class="scores">
-                    <div class="score-box" style="${data.differential.D >= 0 ? 'background: #ffcccc;' : 'background: #f0f0f0;'}">
-                        <div class="score-label">D</div>
-                        <div class="score-value">${data.differential.D}</div>
-                        <div class="score-label">Dominancia</div>
-                    </div>
-                    <div class="score-box" style="${data.differential.I >= 0 ? 'background: #ffffcc;' : 'background: #f0f0f0;'}">
-                        <div class="score-label">I</div>
-                        <div class="score-value">${data.differential.I}</div>
-                        <div class="score-label">Influencia</div>
-                    </div>
-                    <div class="score-box" style="${data.differential.S >= 0 ? 'background: #ccffcc;' : 'background: #f0f0f0;'}">
-                        <div class="score-label">S</div>
-                        <div class="score-value">${data.differential.S}</div>
-                        <div class="score-label">Estabilidad</div>
-                    </div>
-                    <div class="score-box" style="${data.differential.C >= 0 ? 'background: #ccccff;' : 'background: #f0f0f0;'}">
-                        <div class="score-label">C</div>
-                        <div class="score-value">${data.differential.C}</div>
-                        <div class="score-label">Conciencia</div>
+            <div class="content">
+                <div class="profile-name">Perfil: ${profile.name}</div>
+                
+                <div class="section">
+                    <div class="section-title">Puntuaciones</div>
+                    <div class="charts-row">
+                        <div class="chart-col">
+                            <div class="chart-bar" style="height: 60px;">
+                                <div class="chart-bar-fill" style="height: ${Math.max(5, ((data.differential.D + 28) / 56) * 100)}%; background: #dc3545;"></div>
+                            </div>
+                            <div class="chart-value">${data.differential.D}</div>
+                            <div class="chart-label">D</div>
+                        </div>
+                        <div class="chart-col">
+                            <div class="chart-bar" style="height: 60px;">
+                                <div class="chart-bar-fill" style="height: ${Math.max(5, ((data.differential.I + 28) / 56) * 100)}%; background: #ffc107;"></div>
+                            </div>
+                            <div class="chart-value">${data.differential.I}</div>
+                            <div class="chart-label">I</div>
+                        </div>
+                        <div class="chart-col">
+                            <div class="chart-bar" style="height: 60px;">
+                                <div class="chart-bar-fill" style="height: ${Math.max(5, ((data.differential.S + 28) / 56) * 100)}%; background: #28a745;"></div>
+                            </div>
+                            <div class="chart-value">${data.differential.S}</div>
+                            <div class="chart-label">S</div>
+                        </div>
+                        <div class="chart-col">
+                            <div class="chart-bar" style="height: 60px;">
+                                <div class="chart-bar-fill" style="height: ${Math.max(5, ((data.differential.C + 28) / 56) * 100)}%; background: #007bff;"></div>
+                            </div>
+                            <div class="chart-value">${data.differential.C}</div>
+                            <div class="chart-label">C</div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="section">
-                <h2>Características</h2>
-                <div class="traits">
-                    ${profile.traits.map(t => `<div class="trait-item">${t}</div>`).join('')}
-                </div>
-            </div>
-
-            <div class="section">
-                <h2>Análisis</h2>
-                <div class="two-column">
-                    <div class="column">
-                        <h3 style="color: #667eea; font-size: 14px; margin-top: 0;">Fortalezas</h3>
-                        <p>${profile.strengths}</p>
-                    </div>
-                    <div class="column">
-                        <h3 style="color: #667eea; font-size: 14px; margin-top: 0;">Áreas de Desarrollo</h3>
-                        <p>${profile.needs}</p>
+                <div class="section">
+                    <div class="section-title">Características</div>
+                    <div class="traits">
+                        ${profile.traits.map(t => \`<div class="trait">\${t}</div>\`).join('')}
                     </div>
                 </div>
-            </div>
 
-            <div class="section">
-                <h2>Escala de Puntuación</h2>
-                <p><strong>Rango:</strong> -28 a +28</p>
-                <p><strong>Fórmula:</strong> Puntuación = Respuestas MÁS - Respuestas MENOS</p>
-                <table>
-                    <tr>
-                        <th>Dimensión</th>
-                        <th>Más</th>
-                        <th>Menos</th>
-                        <th>Diferencial</th>
-                    </tr>
-                    <tr>
-                        <td>D - Dominancia</td>
-                        <td>${data.scorePlus.D}</td>
-                        <td>${data.scoreMinus.D}</td>
-                        <td style="font-weight: bold; color: #667eea;">${data.differential.D}</td>
-                    </tr>
-                    <tr>
-                        <td>I - Influencia</td>
-                        <td>${data.scorePlus.I}</td>
-                        <td>${data.scoreMinus.I}</td>
-                        <td style="font-weight: bold; color: #667eea;">${data.differential.I}</td>
-                    </tr>
-                    <tr>
-                        <td>S - Estabilidad</td>
-                        <td>${data.scorePlus.S}</td>
-                        <td>${data.scoreMinus.S}</td>
-                        <td style="font-weight: bold; color: #667eea;">${data.differential.S}</td>
-                    </tr>
-                    <tr>
-                        <td>C - Conciencia</td>
-                        <td>${data.scorePlus.C}</td>
-                        <td>${data.scoreMinus.C}</td>
-                        <td style="font-weight: bold; color: #667eea;">${data.differential.C}</td>
-                    </tr>
-                </table>
-            </div>
+                <div class="section">
+                    <div class="section-title">Análisis</div>
+                    <div class="two-col">
+                        <div class="col">
+                            <h4>Fortalezas</h4>
+                            <p>${profile.strengths}</p>
+                        </div>
+                        <div class="col">
+                            <h4>Áreas de Desarrollo</h4>
+                            <p>${profile.needs}</p>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="footer">
-                <p>Este informe fue generado automáticamente por el Test DISC de 28 preguntas.</p>
-                <p>La escala va de -28 (mínimo) a +28 (máximo) para cada dimensión.</p>
+                <div class="section">
+                    <div class="section-title">Detalles de Puntuación</div>
+                    <table>
+                        <tr>
+                            <th style="width: 40%; text-align: left;">Dimensión</th>
+                            <th style="width: 20%;">Más</th>
+                            <th style="width: 20%;">Menos</th>
+                            <th style="width: 20%;">Diferencial</th>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left;">D - Dominancia</td>
+                            <td>${data.scorePlus.D}</td>
+                            <td>${data.scoreMinus.D}</td>
+                            <td style="font-weight: bold; color: #dc3545;">${data.differential.D}</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left;">I - Influencia</td>
+                            <td>${data.scorePlus.I}</td>
+                            <td>${data.scoreMinus.I}</td>
+                            <td style="font-weight: bold; color: #ffc107;">${data.differential.I}</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left;">S - Estabilidad</td>
+                            <td>${data.scorePlus.S}</td>
+                            <td>${data.scoreMinus.S}</td>
+                            <td style="font-weight: bold; color: #28a745;">${data.differential.S}</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left;">C - Conciencia</td>
+                            <td>${data.scorePlus.C}</td>
+                            <td>${data.scoreMinus.C}</td>
+                            <td style="font-weight: bold; color: #007bff;">${data.differential.C}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="page-break"></div>
+
+                <div class="section">
+                    <div class="section-title">Sobre el Test DISC</div>
+                    <p style="margin-bottom: 10px; font-size: 10px;">
+                        El Test DISC es un instrumento científico que analiza cuatro patrones de comportamiento principales.
+                    </p>
+                </div>
+
+                <div class="section">
+                    <div class="section-title" style="border-left-color: #dc3545; background: #ffcccc;">D - DOMINANCIA</div>
+                    <p style="font-size: 10px;"><strong style="color: #333;">Orientación:</strong> Lograr resultados y controlar situaciones. Decisivos, competitivos, directos.</p>
+                </div>
+
+                <div class="section">
+                    <div class="section-title" style="border-left-color: #ffc107; background: #ffffcc;">I - INFLUENCIA</div>
+                    <p style="font-size: 10px;"><strong style="color: #333;">Orientación:</strong> Relaciones interpersonales y comunicación. Sociables, optimistas, persuasivos.</p>
+                </div>
+
+                <div class="section">
+                    <div class="section-title" style="border-left-color: #28a745; background: #ccffcc;">S - ESTABILIDAD</div>
+                    <p style="font-size: 10px;"><strong style="color: #333;">Orientación:</strong> Estabilidad y cooperación. Pacientes, leales, confiables.</p>
+                </div>
+
+                <div class="section">
+                    <div class="section-title" style="border-left-color: #007bff; background: #ccccff;">C - CONCIENCIA</div>
+                    <p style="font-size: 10px;"><strong style="color: #333;">Orientación:</strong> Calidad, precisión y análisis. Analíticos, reflexivos, perfeccionistas.</p>
+                </div>
+
+                <div class="footer">
+                    <p>Informe generado automáticamente • Test DISC de 28 Preguntas</p>
+                    <p>Escala: -28 a +28 • Fecha: ${new Date().toLocaleDateString('es-ES')}</p>
+                </div>
             </div>
         </body>
         </html>
     `;
 
     const opt = {
-        margin: 10,
+        margin: [8, 8, 8, 8],
         filename: 'Perfil_DISC.pdf',
         image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+        html2canvas: { scale: 2, useCORS: true, logging: false, allowTaint: true },
+        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4', compress: true }
     };
     
     html2pdf().set(opt).from(htmlContent).save();
