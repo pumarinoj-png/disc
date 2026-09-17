@@ -325,7 +325,7 @@ function descargarPDF() {
                 <div class="section">
                     <div class="section-title">Características</div>
                     <div class="traits">
-                        ${profile.traits.map(t => \`<div class="trait">\${t}</div>\`).join('')}
+                        ${profile.traits.map(t => '<div class="trait">' + t + '</div>').join('')}
                     </div>
                 </div>
 
