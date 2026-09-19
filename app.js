@@ -241,191 +241,196 @@ function descargarPDF() {
     };
     
     const color = coloresPerfil[data.primary];
-    
-    const htmlContent = `
-        <!DOCTYPE html>
-        <html lang="es">
-        <head>
-            <meta charset="UTF-8">
-            <title>Perfil DISC</title>
-            <style>
-                * { margin: 0; padding: 0; }
-                body { font-family: Arial, sans-serif; color: #333; line-height: 1.5; font-size: 11px; }
-                .header { background: ${color.bg}; color: white; padding: 20px; text-align: center; }
-                .header h1 { font-size: 24px; margin-bottom: 5px; }
-                .header p { font-size: 10px; opacity: 0.9; }
-                .content { padding: 15px; }
-                .section { margin-bottom: 20px; }
-                .section-title { background: ${color.light}; border-left: 4px solid ${color.bg}; padding: 10px; font-weight: bold; font-size: 12px; margin-bottom: 10px; }
-                .profile-name { font-size: 18px; font-weight: bold; color: ${color.bg}; margin: 10px 0; text-align: center; }
-                .charts-row { display: flex; gap: 8px; margin: 15px 0; height: 75px; align-items: flex-start; justify-content: space-around; }
-                .chart-col { display: flex; flex-direction: column; align-items: center; flex: 1; }
-                .chart-bar { width: 100%; background: #f0f0f0; border-radius: 2px; display: flex; align-items: flex-end; justify-content: center; position: relative; }
-                .chart-bar-fill { width: 100%; background: ${color.bg}; border-radius: 2px 2px 0 0; }
-                .chart-value { font-size: 10px; font-weight: bold; color: ${color.bg}; margin-top: 8px; margin-bottom: 3px; }
-                .chart-label { font-size: 9px; color: #666; text-transform: uppercase; }
-                .two-col { display: flex; gap: 15px; }
-                .col { flex: 1; font-size: 10px; }
-                .col h4 { color: ${color.bg}; font-size: 11px; margin-bottom: 5px; font-weight: bold; }
-                .traits { font-size: 10px; line-height: 1.4; }
-                .trait { margin-bottom: 3px; }
-                .trait::before { content: "✓ "; color: ${color.bg}; font-weight: bold; }
-                table { width: 100%; border-collapse: collapse; font-size: 9px; margin: 10px 0; }
-                th { background: ${color.bg}; border: 1px solid ${color.bg}; padding: 6px; text-align: left; font-weight: bold; color: white; }
-                th:not(:first-child) { text-align: center; }
-                td { border: 1px solid #ddd; padding: 6px; }
-                td:nth-child(2), td:nth-child(3), td:nth-child(4) { text-align: center; }
-                .footer { font-size: 9px; color: #999; text-align: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #ddd; }
-                .page-break { page-break-before: always; margin-top: 20px; }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h1>Test DISC</h1>
-                <p>Análisis de Perfil Comportamental</p>
+
+    // Contenedor oculto en la página real (evita el espacio en blanco
+    // y los cortes de contenido que pasaban al usar un string de documento completo)
+    const container = document.createElement('div');
+    container.id = 'pdf-render-container';
+    container.style.position = 'fixed';
+    container.style.top = '0';
+    container.style.left = '-9999px';
+    container.style.width = '210mm';
+    container.style.background = '#ffffff';
+
+    container.innerHTML = `
+        <style>
+            #pdf-render-container * { margin: 0; padding: 0; box-sizing: border-box; }
+            #pdf-render-container { font-family: Arial, sans-serif; color: #333; line-height: 1.5; font-size: 11px; }
+            #pdf-render-container .header { background: ${color.bg}; color: white; padding: 20px; text-align: center; }
+            #pdf-render-container .header h1 { font-size: 24px; margin-bottom: 5px; }
+            #pdf-render-container .header p { font-size: 10px; opacity: 0.9; }
+            #pdf-render-container .content { padding: 15px; }
+            #pdf-render-container .section { margin-bottom: 20px; page-break-inside: avoid; }
+            #pdf-render-container .section-title { background: ${color.light}; border-left: 4px solid ${color.bg}; padding: 10px; font-weight: bold; font-size: 12px; margin-bottom: 10px; }
+            #pdf-render-container .profile-name { font-size: 18px; font-weight: bold; color: ${color.bg}; margin: 10px 0; text-align: center; }
+            #pdf-render-container .charts-row { display: flex; gap: 8px; margin: 15px 0; height: 75px; align-items: flex-start; justify-content: space-around; }
+            #pdf-render-container .chart-col { display: flex; flex-direction: column; align-items: center; flex: 1; }
+            #pdf-render-container .chart-bar { width: 100%; background: #f0f0f0; border-radius: 2px; display: flex; align-items: flex-end; justify-content: center; position: relative; }
+            #pdf-render-container .chart-bar-fill { width: 100%; border-radius: 2px 2px 0 0; }
+            #pdf-render-container .chart-value { font-size: 10px; font-weight: bold; color: ${color.bg}; margin-top: 8px; margin-bottom: 3px; }
+            #pdf-render-container .chart-label { font-size: 9px; color: #666; text-transform: uppercase; }
+            #pdf-render-container .two-col { display: flex; gap: 15px; }
+            #pdf-render-container .col { flex: 1; font-size: 10px; }
+            #pdf-render-container .col h4 { color: ${color.bg}; font-size: 11px; margin-bottom: 5px; font-weight: bold; }
+            #pdf-render-container .traits { font-size: 10px; line-height: 1.4; }
+            #pdf-render-container .trait { margin-bottom: 3px; }
+            #pdf-render-container .trait::before { content: "✓ "; color: ${color.bg}; font-weight: bold; }
+            #pdf-render-container table { width: 100%; border-collapse: collapse; font-size: 9px; margin: 10px 0; }
+            #pdf-render-container th { background: ${color.bg}; border: 1px solid ${color.bg}; padding: 6px; text-align: left; font-weight: bold; color: white; }
+            #pdf-render-container th:not(:first-child) { text-align: center; }
+            #pdf-render-container td { border: 1px solid #ddd; padding: 6px; }
+            #pdf-render-container td:nth-child(2), #pdf-render-container td:nth-child(3), #pdf-render-container td:nth-child(4) { text-align: center; }
+            #pdf-render-container .footer { font-size: 9px; color: #999; text-align: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #ddd; }
+            #pdf-render-container .page-break { page-break-before: always; }
+        </style>
+
+        <div class="header">
+            <h1>Test DISC</h1>
+            <p>Análisis de Perfil Comportamental</p>
+        </div>
+
+        <div class="content">
+            <div class="profile-name">Perfil: ${profile.name}</div>
+
+            <div class="section">
+                <div class="section-title">Puntuaciones</div>
+                <div class="charts-row">
+                    <div class="chart-col">
+                        <div class="chart-bar" style="height: 60px;">
+                            <div class="chart-bar-fill" style="height: ${Math.max(5, ((data.differential.D + 28) / 56) * 100)}%; background: #dc3545;"></div>
+                        </div>
+                        <div class="chart-value">${data.differential.D}</div>
+                        <div class="chart-label">D</div>
+                    </div>
+                    <div class="chart-col">
+                        <div class="chart-bar" style="height: 60px;">
+                            <div class="chart-bar-fill" style="height: ${Math.max(5, ((data.differential.I + 28) / 56) * 100)}%; background: #ffc107;"></div>
+                        </div>
+                        <div class="chart-value">${data.differential.I}</div>
+                        <div class="chart-label">I</div>
+                    </div>
+                    <div class="chart-col">
+                        <div class="chart-bar" style="height: 60px;">
+                            <div class="chart-bar-fill" style="height: ${Math.max(5, ((data.differential.S + 28) / 56) * 100)}%; background: #28a745;"></div>
+                        </div>
+                        <div class="chart-value">${data.differential.S}</div>
+                        <div class="chart-label">S</div>
+                    </div>
+                    <div class="chart-col">
+                        <div class="chart-bar" style="height: 60px;">
+                            <div class="chart-bar-fill" style="height: ${Math.max(5, ((data.differential.C + 28) / 56) * 100)}%; background: #007bff;"></div>
+                        </div>
+                        <div class="chart-value">${data.differential.C}</div>
+                        <div class="chart-label">C</div>
+                    </div>
+                </div>
             </div>
 
-            <div class="content">
-                <div class="profile-name">Perfil: ${profile.name}</div>
-                
-                <div class="section">
-                    <div class="section-title">Puntuaciones</div>
-                    <div class="charts-row">
-                        <div class="chart-col">
-                            <div class="chart-bar" style="height: 60px;">
-                                <div class="chart-bar-fill" style="height: ${Math.max(5, ((data.differential.D + 28) / 56) * 100)}%; background: #dc3545;"></div>
-                            </div>
-                            <div class="chart-value">${data.differential.D}</div>
-                            <div class="chart-label">D</div>
-                        </div>
-                        <div class="chart-col">
-                            <div class="chart-bar" style="height: 60px;">
-                                <div class="chart-bar-fill" style="height: ${Math.max(5, ((data.differential.I + 28) / 56) * 100)}%; background: #ffc107;"></div>
-                            </div>
-                            <div class="chart-value">${data.differential.I}</div>
-                            <div class="chart-label">I</div>
-                        </div>
-                        <div class="chart-col">
-                            <div class="chart-bar" style="height: 60px;">
-                                <div class="chart-bar-fill" style="height: ${Math.max(5, ((data.differential.S + 28) / 56) * 100)}%; background: #28a745;"></div>
-                            </div>
-                            <div class="chart-value">${data.differential.S}</div>
-                            <div class="chart-label">S</div>
-                        </div>
-                        <div class="chart-col">
-                            <div class="chart-bar" style="height: 60px;">
-                                <div class="chart-bar-fill" style="height: ${Math.max(5, ((data.differential.C + 28) / 56) * 100)}%; background: #007bff;"></div>
-                            </div>
-                            <div class="chart-value">${data.differential.C}</div>
-                            <div class="chart-label">C</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <div class="section-title">Características</div>
-                    <div class="traits">
-                        ${profile.traits.map(t => '<div class="trait">' + t + '</div>').join('')}
-                    </div>
-                </div>
-
-                <div class="section">
-                    <div class="section-title">Análisis</div>
-                    <div class="two-col">
-                        <div class="col">
-                            <h4>Fortalezas</h4>
-                            <p>${profile.strengths}</p>
-                        </div>
-                        <div class="col">
-                            <h4>Áreas de Desarrollo</h4>
-                            <p>${profile.needs}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <div class="section-title">Detalles de Puntuación</div>
-                    <table>
-                        <tr>
-                            <th style="width: 40%; text-align: left;">Dimensión</th>
-                            <th style="width: 20%;">Más</th>
-                            <th style="width: 20%;">Menos</th>
-                            <th style="width: 20%;">Diferencial</th>
-                        </tr>
-                        <tr>
-                            <td style="text-align: left;">D - Dominancia</td>
-                            <td>${data.scorePlus.D}</td>
-                            <td>${data.scoreMinus.D}</td>
-                            <td style="font-weight: bold; color: #dc3545;">${data.differential.D}</td>
-                        </tr>
-                        <tr>
-                            <td style="text-align: left;">I - Influencia</td>
-                            <td>${data.scorePlus.I}</td>
-                            <td>${data.scoreMinus.I}</td>
-                            <td style="font-weight: bold; color: #ffc107;">${data.differential.I}</td>
-                        </tr>
-                        <tr>
-                            <td style="text-align: left;">S - Estabilidad</td>
-                            <td>${data.scorePlus.S}</td>
-                            <td>${data.scoreMinus.S}</td>
-                            <td style="font-weight: bold; color: #28a745;">${data.differential.S}</td>
-                        </tr>
-                        <tr>
-                            <td style="text-align: left;">C - Conciencia</td>
-                            <td>${data.scorePlus.C}</td>
-                            <td>${data.scoreMinus.C}</td>
-                            <td style="font-weight: bold; color: #007bff;">${data.differential.C}</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="page-break"></div>
-
-                <div class="section">
-                    <div class="section-title">Sobre el Test DISC</div>
-                    <p style="margin-bottom: 10px; font-size: 10px;">
-                        El Test DISC es un instrumento científico que analiza cuatro patrones de comportamiento principales.
-                    </p>
-                </div>
-
-                <div class="section">
-                    <div class="section-title" style="border-left-color: #dc3545; background: #ffcccc;">D - DOMINANCIA</div>
-                    <p style="font-size: 10px;"><strong style="color: #333;">Orientación:</strong> Lograr resultados y controlar situaciones. Decisivos, competitivos, directos.</p>
-                </div>
-
-                <div class="section">
-                    <div class="section-title" style="border-left-color: #ffc107; background: #ffffcc;">I - INFLUENCIA</div>
-                    <p style="font-size: 10px;"><strong style="color: #333;">Orientación:</strong> Relaciones interpersonales y comunicación. Sociables, optimistas, persuasivos.</p>
-                </div>
-
-                <div class="section">
-                    <div class="section-title" style="border-left-color: #28a745; background: #ccffcc;">S - ESTABILIDAD</div>
-                    <p style="font-size: 10px;"><strong style="color: #333;">Orientación:</strong> Estabilidad y cooperación. Pacientes, leales, confiables.</p>
-                </div>
-
-                <div class="section">
-                    <div class="section-title" style="border-left-color: #007bff; background: #ccccff;">C - CONCIENCIA</div>
-                    <p style="font-size: 10px;"><strong style="color: #333;">Orientación:</strong> Calidad, precisión y análisis. Analíticos, reflexivos, perfeccionistas.</p>
-                </div>
-
-                <div class="footer">
-                    <p>Informe generado automáticamente • Test DISC de 28 Preguntas</p>
-                    <p>Escala: -28 a +28 • Fecha: ${new Date().toLocaleDateString('es-ES')}</p>
+            <div class="section">
+                <div class="section-title">Características</div>
+                <div class="traits">
+                    ${profile.traits.map(t => '<div class="trait">' + t + '</div>').join('')}
                 </div>
             </div>
-        </body>
-        </html>
+
+            <div class="section">
+                <div class="section-title">Análisis</div>
+                <div class="two-col">
+                    <div class="col">
+                        <h4>Fortalezas</h4>
+                        <p>${profile.strengths}</p>
+                    </div>
+                    <div class="col">
+                        <h4>Áreas de Desarrollo</h4>
+                        <p>${profile.needs}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Detalles de Puntuación</div>
+                <table>
+                    <tr>
+                        <th style="width: 40%; text-align: left;">Dimensión</th>
+                        <th style="width: 20%;">Más</th>
+                        <th style="width: 20%;">Menos</th>
+                        <th style="width: 20%;">Diferencial</th>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">D - Dominancia</td>
+                        <td>${data.scorePlus.D}</td>
+                        <td>${data.scoreMinus.D}</td>
+                        <td style="font-weight: bold; color: #dc3545;">${data.differential.D}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">I - Influencia</td>
+                        <td>${data.scorePlus.I}</td>
+                        <td>${data.scoreMinus.I}</td>
+                        <td style="font-weight: bold; color: #ffc107;">${data.differential.I}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">S - Estabilidad</td>
+                        <td>${data.scorePlus.S}</td>
+                        <td>${data.scoreMinus.S}</td>
+                        <td style="font-weight: bold; color: #28a745;">${data.differential.S}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">C - Conciencia</td>
+                        <td>${data.scorePlus.C}</td>
+                        <td>${data.scoreMinus.C}</td>
+                        <td style="font-weight: bold; color: #007bff;">${data.differential.C}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="section page-break">
+                <div class="section-title">Sobre el Test DISC</div>
+                <p style="margin-bottom: 10px; font-size: 10px;">
+                    El Test DISC es un instrumento que analiza cuatro patrones de comportamiento principales.
+                </p>
+            </div>
+
+            <div class="section">
+                <div class="section-title" style="border-left-color: #dc3545; background: #ffcccc;">D - DOMINANCIA</div>
+                <p style="font-size: 10px;"><strong style="color: #333;">Orientación:</strong> Lograr resultados y controlar situaciones. Decisivos, competitivos, directos.</p>
+            </div>
+
+            <div class="section">
+                <div class="section-title" style="border-left-color: #ffc107; background: #ffffcc;">I - INFLUENCIA</div>
+                <p style="font-size: 10px;"><strong style="color: #333;">Orientación:</strong> Relaciones interpersonales y comunicación. Sociables, optimistas, persuasivos.</p>
+            </div>
+
+            <div class="section">
+                <div class="section-title" style="border-left-color: #28a745; background: #ccffcc;">S - ESTABILIDAD</div>
+                <p style="font-size: 10px;"><strong style="color: #333;">Orientación:</strong> Estabilidad y cooperación. Pacientes, leales, confiables.</p>
+            </div>
+
+            <div class="section">
+                <div class="section-title" style="border-left-color: #007bff; background: #ccccff;">C - CONCIENCIA</div>
+                <p style="font-size: 10px;"><strong style="color: #333;">Orientación:</strong> Calidad, precisión y análisis. Analíticos, reflexivos, perfeccionistas.</p>
+            </div>
+
+            <div class="footer">
+                <p>Informe generado automáticamente • Test DISC de 28 Preguntas</p>
+                <p>Escala: -28 a +28 • Fecha: ${new Date().toLocaleDateString('es-ES')}</p>
+            </div>
+        </div>
     `;
+
+    document.body.appendChild(container);
 
     const opt = {
         margin: [8, 8, 8, 8],
         filename: 'Perfil_DISC.pdf',
         image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: 2, useCORS: true, logging: false, allowTaint: true },
-        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4', compress: true }
+        html2canvas: { scale: 2, useCORS: true, logging: false, allowTaint: true, windowWidth: container.scrollWidth },
+        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4', compress: true },
+        pagebreak: { mode: ['css', 'avoid-all'] }
     };
-    
-    html2pdf().set(opt).from(htmlContent).save();
+
+    html2pdf().set(opt).from(container).save().then(() => {
+        document.body.removeChild(container);
+    });
 }
 
 // Inicializar
