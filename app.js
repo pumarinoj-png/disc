@@ -248,7 +248,8 @@ function descargarPDF() {
     container.id = 'pdf-render-container';
     container.style.position = 'fixed';
     container.style.top = '0';
-    container.style.left = '-9999px';
+    container.style.left = '0';
+    container.style.zIndex = '-9999';
     container.style.width = '210mm';
     container.style.background = '#ffffff';
 
@@ -423,7 +424,7 @@ function descargarPDF() {
         margin: [8, 8, 8, 8],
         filename: 'Perfil_DISC.pdf',
         image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: 2, useCORS: true, logging: false, allowTaint: true, windowWidth: container.scrollWidth },
+        html2canvas: { scale: 2, useCORS: true, logging: false, allowTaint: true },
         jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4', compress: true },
         pagebreak: { mode: ['css', 'avoid-all'] }
     };
